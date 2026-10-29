@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Application Form</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png"><link rel="alternate icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head><body class="public">
+<div class="form-wrap">
+  <div id="loading" class="card pad center">Loading form…</div>
+  <div id="area" class="card hidden">
+    <img id="pubBanner" class="pub-banner hidden" alt="">
+    <div class="pub-head"><img id="pubLogo" class="pub-logo hidden" alt=""><div><h1 id="pubCompany"></h1><h2 id="pubTitle"></h2></div></div>
+    <p id="pubDesc" class="desc hidden"></p>
+    <form id="dyn" novalidate>
+      <input id="hp" name="hp" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div id="fieldsBox" class="dyn-grid"></div>
+      <p class="muted small">Your answers will be shared with the form owner. See the <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+      <div class="actions"><button type="button" class="btn" id="btnPrev">Preview PDF</button><button type="submit" class="btn pri" id="btnSub">Submit</button></div>
+    </form>
+  </div>
+  <div id="done" class="card pad center hidden"><h2>Thank you!</h2><p class="muted" id="thanksText">Your response was submitted successfully.</p>
+    <div class="actions center-a"><button class="btn" id="btnDl2">Download PDF copy</button><button class="btn pri" onclick="location.reload()">Submit another</button></div></div>
+</div>
+
+<footer id="siteFoot" class="site-foot hidden"><div class="sf-in"><div><b id="sfName"></b><p class="muted" id="sfTag"></p></div><div class="muted sf-contact" id="sfContact"></div></div><div class="sf-copy muted brand-row"><img class="foot-logo" src="logo/logo-horizontal.svg" alt="Formora"><span>Powered by Formora · by <span class="onu">Onu- অণু</span> · Contact: <a href="mailto:onu.creates@gmail.com">onu.creates@gmail.com</a> · <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a></span></div></footer>
+
+<div id="pdfModal" class="modal hidden"><div class="modal-box wide">
+  <div class="modal-head"><h2>PDF preview</h2><button class="x" onclick="closePdf()">×</button></div>
+  <div class="pdf-scroll"><div id="paper" class="paper"></div></div>
+  <div class="actions"><button class="btn" onclick="closePdf()">Close</button><button class="btn pri" id="btnDl">Download PDF</button></div>
+</div></div>
+<div id="capHost"></div><div id="toasts"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/common.js"></script><script src="js/form.js"></script>
+</body></html>

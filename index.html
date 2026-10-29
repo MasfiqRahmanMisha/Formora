@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Formora Admin</title><link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png"><link rel="alternate icon" href="favicon.ico"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head><body>
+
+<div id="loginPage" class="auth hidden">
+  <aside class="auth-side">
+    <div class="brand"><img class="logo-img" src="logo/logo-mark-light.svg" alt="Formora logo"><b>Formora</b></div>
+    <h2>Build forms. Collect responses. Print branded PDFs.</h2>
+    <ul><li>A branded A4 PDF for every submission</li><li>Logo watermark and blank signature space</li><li>Your forms and responses stay private to your account</li></ul>
+  </aside>
+  <main class="auth-main"><div class="auth-card">
+    <div class="auth-brand"><img class="logo-img" src="logo/logo-mark.svg" alt="Formora logo"><b>Formora</b></div>
+    <div id="stepEmail">
+      <h1 id="aTitle">Welcome back</h1><p class="muted" id="aSub">Log in to your dashboard</p>
+      <div class="tabs"><button type="button" id="tLogin" class="on">Log in</button><button type="button" id="tSignup">Sign up</button></div>
+      <form id="emailForm">
+        <label id="nameWrap" class="hidden">Full name<input id="aName" autocomplete="name" maxlength="80" placeholder="Your name"></label>
+        <label>Email<input id="aEmail" type="email" autocomplete="email" required placeholder="you@example.com"></label>
+        <label>Password<input id="aPass" type="password" autocomplete="current-password" required minlength="8" maxlength="72" placeholder="At least 8 characters"></label>
+        <label id="pass2Wrap" class="hidden">Confirm password<input id="aPass2" type="password" autocomplete="new-password" maxlength="72" placeholder="Re-enter password"></label>
+        <button class="btn pri block" id="aSend">Log in</button>
+        <p class="muted small center hidden" id="termsWrap">By creating an account you agree to our <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.</p>
+        <p class="muted small center" id="forgotWrap"><button type="button" class="link" id="aForgot">Forgot password?</button></p>
+      </form>
+      <div class="or"><span>or</span></div>
+      <button type="button" class="btn block" id="gbtn">Continue with Google</button>
+    </div>
+    <div id="stepCode" class="hidden">
+      <h1>Check your email</h1><p class="muted">We sent a 6-digit code to <b id="aSent"></b></p>
+      <div class="otp" id="otp"></div>
+      <button class="btn pri block" id="aVerify">Verify &amp; continue</button>
+      <p class="muted small center"><span id="aTimer"></span> <button type="button" class="link" id="aResend">Resend code</button> · <button type="button" class="link" id="aBack">Change email</button></p>
+    </div>
+    <div id="stepReset" class="hidden">
+      <h1>Set a new password</h1><p class="muted">Choose a new password for your account</p>
+      <form id="resetForm">
+        <label>New password<input id="rPass" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
+        <label>Confirm password<input id="rPass2" type="password" autocomplete="new-password" required minlength="8" maxlength="72"></label>
+        <button class="btn pri block" id="rSave">Update password</button>
+      </form>
+    </div>
+  </div></main>
+</div>
+
+<div id="app" class="hidden">
+<header class="top"><div class="brand"><img class="logo-img" src="logo/logo-mark-light.svg" alt="Formora logo"><b>Formora</b></div><div class="row"><span id="avatar" class="avatar">A</span><span id="me" class="me"></span><button class="btn" id="logout">Sign out</button></div></header>
+<div id="demoBar" class="demo hidden">Demo mode · no backend connected. Data is saved only in this browser. · <a href="?login">Preview login / sign-up page</a></div>
+<main class="wrap">
+
+<section id="dash">
+  <div class="hero">
+    <div class="hero-top"><div><h1>Welcome back, <span id="heroName">Admin</span></h1><span class="pill" id="heroDate"></span><p>Here's an overview of your forms and responses</p></div>
+      <div class="row"><button class="btn glass" onclick="openBuilder()">+ New form</button><button class="btn glass" onclick="refresh()" title="Refresh" aria-label="Refresh"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.5-4M4 4v4h4M4 13a8 8 0 0 0 14.5 4M20 20v-4h-4"/></svg></button></div></div>
+    <div class="hero-stats">
+      <div class="gstat"><div class="gi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg></div><span>Total forms</span><strong id="sTotal">0</strong><small>created by you</small></div>
+      <div class="gstat"><div class="gi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8.5 12.5 2.5 2.5 4.5-5"/></svg></div><span>Published</span><strong id="sPub">0</strong><small>live right now</small></div>
+      <div class="gstat"><div class="gi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9a2.8 2.8 0 0 0-4-4L4 16z"/></svg></div><span>Drafts</span><strong id="sDraft">0</strong><small>not published yet</small></div>
+      <div class="gstat"><div class="gi"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 20V10M12 20V4M19 20v-7"/></svg></div><span>Responses</span><strong id="sResp">0</strong><small>across all forms</small></div>
+    </div>
+  </div>
+  <div class="sec-head"><h2>Your forms</h2><p class="muted">Create, share and review your forms</p></div>
+  <div id="formsList" class="fgrid"></div>
+</section>
+
+<section id="builder" class="hidden">
+  <div class="head"><div><h1 id="bTitle">New form</h1><p class="muted">Organization details and form fields</p></div>
+    <button class="btn" onclick="refresh()">← Back</button></div>
+  <div class="card pad">
+    <h2>Organization</h2>
+    <div class="grid">
+      <label>Company / organization *<input id="companyName" maxlength="150"></label>
+      <label>Form title *<input id="formTitle" maxlength="150"></label>
+      <label class="full">Address<input id="address" maxlength="300"></label>
+      <label>Phone<input id="phone" maxlength="300"></label>
+      <label>Email<input id="email" type="email" maxlength="300"></label>
+      <label>Website<input id="website" maxlength="300"></label>
+      <label>Footer text<input id="footerText" maxlength="300"></label>
+      <div class="full"><label>Company logo <span class="muted">(also used as the PDF watermark; PNG with transparent background works best)</span>
+        <input id="logoFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <div class="logo-box"><img id="logoPreview" alt="" class="hidden"><button class="btn sm hidden" id="rmLogo" type="button">Remove logo</button></div></div>
+    </div>
+  </div>
+  <div class="card pad">
+    <h2>Form page</h2>
+    <div class="grid">
+      <div class="full"><label>Banner <span class="muted">(fixed size 1200 × 300 px, 4:1. Other images are auto-cropped to fit)</span>
+        <input id="bannerFile" type="file" accept="image/png,image/jpeg,image/webp"></label>
+        <div class="logo-box"><img id="bannerPreview" class="banner-prev hidden" alt=""><button class="btn sm hidden" id="rmBanner" type="button">Remove banner</button></div></div>
+      <label class="full">Description <span class="muted">(shown under the title on the form)</span><textarea id="formDesc" rows="3" maxlength="1000"></textarea></label>
+      <label class="full">Thank-you message <span class="muted">(after submit)</span><input id="thanksMsg" maxlength="300" placeholder="Your response was submitted successfully."></label>
+      <label class="check full"><input id="surveyMode" type="checkbox"> Survey mode: respondents don't see the PDF preview/download buttons (responses are still saved)</label>
+    </div>
+  </div>
+  <div class="card pad">
+    <div class="head slim"><div><h2>Fields</h2><p class="muted">Order here is the order in the form and PDF</p></div>
+      <button class="btn pri" onclick="openField()">+ Add field</button></div>
+    <div id="fieldsList"></div>
+  </div>
+  <div class="actions">
+    <button class="btn" id="btnDraft" onclick="saveForm('draft')">Save draft</button>
+    <button class="btn pri" id="btnPub" onclick="saveForm('published')">Publish</button>
+  </div>
+</section>
+
+<section id="resp" class="hidden">
+  <div class="head"><div><h1 id="rTitle">Responses</h1><p class="muted" id="rCount"></p></div>
+    <div class="row"><button class="btn pri" id="btnExp" onclick="exportPdf()">Download PDF</button><button class="btn" onclick="exportCsv()">Download CSV</button><button class="btn" onclick="refresh()">← Back</button></div></div>
+  <div class="card"><div class="pad filters"><input id="rSearch" placeholder="Search responses..." oninput="renderResp()"><label class="inl">From<input id="rFrom" type="date" onchange="renderResp()"></label><label class="inl">To<input id="rTo" type="date" onchange="renderResp()"></label><button class="btn sm" onclick="clearFilters()">Clear</button></div></div>
+  <div id="rSummary"></div>
+  <div class="card">
+    <div class="table-wrap"><table><thead id="rHead"></thead><tbody id="rBody"></tbody></table></div></div>
+</section>
+</main>
+<footer class="site-foot"><div class="sf-in"><div><img class="foot-logo" src="logo/logo-horizontal.svg" alt="Formora"><p class="muted">Build forms, collect responses and generate branded PDFs.</p></div><div class="muted sf-contact">© <span id="yr"></span> Formora · by <span class="onu">Onu- অণু</span><br>Contact: <a href="mailto:onu.creates@gmail.com">onu.creates@gmail.com</a><br><a href="privacy.html">Privacy Policy</a></div></div></footer>
+</div>
+<div id="dm" class="modal hidden"><div class="modal-box wide"><div class="modal-head"><h2>Response details</h2><button class="x" onclick="$('dm').classList.add('hidden')">×</button></div>
+  <div id="dBody"></div><div class="actions"><button class="btn" onclick="$('dm').classList.add('hidden')">Close</button></div></div></div>
+<div id="capHost"></div>
+
+<div id="fm" class="modal hidden"><div class="modal-box">
+  <div class="modal-head"><h2 id="fmTitle">Add field</h2><button class="x" onclick="closeField()">×</button></div>
+  <label>Label<input id="fLabel" maxlength="150"></label>
+  <label>Type<select id="fType" onchange="typeChanged()">
+    <option value="text">Text</option><option value="textarea">Long text</option><option value="number">Number</option>
+    <option value="email">Email</option><option value="date">Date</option><option value="dropdown">Dropdown</option>
+    <option value="radio">Radio (single choice)</option><option value="checkbox">Checkbox (multiple choice)</option>
+    <option value="scale">Linear scale (e.g. 1 to 5)</option><option value="photo">Formal photo</option><option value="signature">Signature (blank space for printing)</option></select></label>
+  <label>Help text <span class="muted">(optional, shown under the question)</span><input id="fHelp" maxlength="300"></label>
+  <div id="fScaleWrap" class="hidden"><div class="grid"><label>Scale from 1 to<select id="fMax"><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select></label>
+    <span></span><label>Label for 1 <span class="muted">(optional)</span><input id="fLo" maxlength="40" placeholder="e.g. Poor"></label><label>Label for highest <span class="muted">(optional)</span><input id="fHi" maxlength="40" placeholder="e.g. Excellent"></label></div></div>
+  <label id="fOptsWrap" class="hidden">Options <span class="muted">(one per line)</span><textarea id="fOpts" rows="4"></textarea></label>
+  <p id="fSigHint" class="muted hidden">Left blank on the PDF: leaves space, a line and this label so it can be printed and signed by hand. 2 signatures go left &amp; right; 3 go left, centre &amp; right.</p>
+  <label id="fReqWrap" class="check"><input id="fReq" type="checkbox"> Required</label>
+  <div class="actions"><button class="btn" onclick="closeField()">Cancel</button><button class="btn pri" onclick="saveField()">Save field</button></div>
+</div></div>
+<div id="toasts"></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="js/common.js"></script><script src="js/admin.js"></script>
+</body></html>
